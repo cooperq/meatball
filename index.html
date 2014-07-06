@@ -49,15 +49,12 @@
           $(sb.player.sprite).css('bottom',sb.player.y_pos);
           
           //move ground
-          var pos = parseInt($("#ground").css("background-position-x")) - sb.default_velocity;
+          var pos = parseInt($("#ground").css("background-position-x"), 10) - sb.default_velocity;
+          console.log('pos', pos, sb.default_velocity);
           $("#ground").css('background-position-x', pos);
 
-          //move pipes
-          $(".pipe").each(function(){
+          $(".topPipe").each(function(){
             var $pipe = $(this);
-            var pos = parseInt($pipe.css("left")) - sb.default_velocity;
-            $pipe.css('left', pos);
-
             //score pipe
             if(parseInt($pipe.css('left')) <= -55){
               if(!$pipe.data('scored')){
@@ -65,6 +62,13 @@
                 $pipe.data('scored', 'true');
               }
             }
+          });
+
+          //move pipes
+          $(".pipe").each(function(){
+            var $pipe = $(this);
+            var pos = parseInt($pipe.css("left")) - sb.default_velocity;
+            $pipe.css('left', pos);
 
             //remove pipe
             if(parseInt($pipe.css('left')) <= -130){
@@ -137,7 +141,6 @@
         $("body").click(function(e){
           sb.player.fart();
           e.preventDefault();
-
         });
         $("body").keypress(function(e){
           sb.player.fart();
@@ -180,6 +183,10 @@
         -webkit-text-stroke: 1px black;
         font-size: 30px;
         margin-top: 50px;
+      }
+      #score-container{
+        position: absolute;
+        width: 100%;
         z-index: 1000;
       }
       .pipe{
@@ -207,8 +214,10 @@
     <div id='world' class='special'>
       <div id='pc' class='sprite'>
       </div>
-      <div id='score'>
-        0
+      <div id='score-container'>
+        <div id='score'>
+          0
+        </div>
       </div>
       <div id='ground' class='surface'>
       </div>

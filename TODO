@@ -1,5 +1,4 @@
 Features:
-
 meatball art
 fart art
 soundtrack
@@ -11,7 +10,7 @@ ground art
 button to restart when dead
 
 Bugs:
-score is doubled
-score is hidden
+x score is doubled
+x score is hidden
 kill sound on game over
 ground moves faster than pipes
