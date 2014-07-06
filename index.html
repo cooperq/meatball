@@ -1,0 +1,222 @@
+<html>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script>
+      sb = {
+        fps: 50,
+        default_gravity: 8,
+        default_lift: 18,
+        default_velocity: 4,
+        default_drag: 1,
+        frame_count: 0,
+        score: 0,
+        game_over: false,
+        next_frame: function(){
+          if(sb.game_over){
+            clearInterval(sb._intervalId);
+            sb.endGame();
+            return;
+          }
+
+          sb.frame_count += 1;
+          sb.update();
+          sb.draw();
+        },
+        update: function(){
+          $("#score").text(sb.score);  
+
+          //collision detection
+          $(".surface").each(function(idx, surface){
+            if(sb._collision($(sb.player.sprite), $(surface))){
+              sb.game_over = true;
+            }
+          });
+
+          //update player position
+          sb.player.y_pos = sb.player.y_pos - sb.default_gravity + sb.player.lift
+
+          //calculate new upward lift
+          if(sb.player.lift > 0) { sb.player.lift -= sb.default_drag }
+
+          //draw another obstacle
+          if(sb.frame_count % 100 === 0){
+            sb.drawNewObstacle();
+          }
+        },
+        draw: function(){
+          //update sprite position
+          $(sb.player.sprite).css('bottom',sb.player.y_pos);
+          
+          //move ground
+          var pos = parseInt($("#ground").css("background-position-x")) - sb.default_velocity;
+          $("#ground").css('background-position-x', pos);
+
+          //move pipes
+          $(".pipe").each(function(){
+            var $pipe = $(this);
+            var pos = parseInt($pipe.css("left")) - sb.default_velocity;
+            $pipe.css('left', pos);
+
+            //score pipe
+            if(parseInt($pipe.css('left')) <= -55){
+              if(!$pipe.data('scored')){
+                sb.score += 1;
+                $pipe.data('scored', 'true');
+              }
+            }
+
+            //remove pipe
+            if(parseInt($pipe.css('left')) <= -130){
+              $pipe.remove();
+            }
+          });
+        },
+        endGame: function(){
+          $("#score").html("Game Over!<br>Score: " + sb.score);
+        },
+        drawNewObstacle: function(){
+          console.log('drawing pipe');
+          var height = sb._getRandomInt(100, 500);
+          var topHeight = 700;
+          var topPos = -1 * height - 350;
+          $('<div></div>').addClass('surface').addClass('pipe').addClass('bottomPipe').css('left', '500').css('height', height).appendTo('#world');
+          $('<div></div>').addClass('surface').addClass('pipe').addClass('topPipe').css('left', '500').css('top', topPos).css('height', topHeight).appendTo('#world');
+        },
+          
+        /*****************************************
+        * Helper methods
+        *****************************************/
+
+        // Returns a random integer between min and max
+        // Using Math.round() will give you a non-uniform distribution!
+        _getRandomInt: function(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }, 
+
+        _bounds_check: function(val, lower, upper){
+          if(val >= upper) return upper;
+          if(val <= lower) return lower;
+          return val;
+        },
+        _collision: function($div1, $div2) {
+          var x1 = $div1.offset().left;
+          var y1 = $div1.offset().top;
+          var h1 = $div1.outerHeight(true);
+          var w1 = $div1.outerWidth(true);
+          var b1 = y1 + h1;
+          var r1 = x1 + w1;
+          var x2 = $div2.offset().left;
+          var y2 = $div2.offset().top;
+          var h2 = $div2.outerHeight(true);
+          var w2 = $div2.outerWidth(true);
+          var b2 = y2 + h2;
+          var r2 = x2 + w2;
+            
+          if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
+          return true;
+        }
+      }
+
+      sb.player = {
+        y_pos: 400,
+        lift: 0,
+        sprite: "#pc",
+        fart: function(){
+          sb.player.lift = sb.default_lift;
+          $("#fartsound")[0].load();
+          $("#fartsound")[0].play();
+        }
+      }
+
+      // Start the game loop
+      sb._intervalId = setInterval(sb.next_frame, 1000 / sb.fps);
+
+      //listen for interaction
+      $(function(){
+        $("body").click(function(e){
+          sb.player.fart();
+          e.preventDefault();
+
+        });
+        $("body").keypress(function(e){
+          sb.player.fart();
+          e.preventDefault();
+        });
+      });
+
+    </script>
+    <style>
+      #pc{
+        background: url("http://icons.iconarchive.com/icons/etherbrian/bit-eat/32/Burger-icon.png");
+        height: 32px;
+        width: 32px;
+        position: absolute;
+        bottom: 400px;
+        left: 75px;
+      }
+      #world{
+        background: #1144cc;
+        height: 100%;
+        width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+        position: relative;
+      }
+      #ground{
+        background: url("http://www.ckdexpert.com/library/textures/images/Grass.jpg") repeat;
+        width: 100%;
+        height: 25px;
+        position: absolute;
+        bottom: 0;
+        background-position-x: 0;
+      }
+      #score{
+        text-align: center;
+        color: white;
+        margin: auto;
+        font-family: 'Press Start 2P', cursive;
+        -webkit-text-stroke: 1px black;
+        font-size: 30px;
+        margin-top: 50px;
+        z-index: 1000;
+      }
+      .pipe{
+        width: 130px;
+        background: #22cc22;
+        position: absolute;
+        z-index: 10;
+      }
+      .bottomPipe{
+        bottom: 25px;
+        z-index: 10;
+      }
+      .topPipe{
+        top: 0px;
+        z-index: 10;
+      }
+      body{
+        padding: 0;
+        margin: 0;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='world' class='special'>
+      <div id='pc' class='sprite'>
+      </div>
+      <div id='score'>
+        0
+      </div>
+      <div id='ground' class='surface'>
+      </div>
+    </div>
+    <audio id="fartsound" src="fart.wav" preload="auto"></audio>
+    <!--<audio  preload="auto" autobuffer loop autoplay>
+      <source src='music.mp3' type='file/mp3'>
+      <source src='music.wav'>
+      </audio> -->
+  </body>
+</html>
