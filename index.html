@@ -49,9 +49,10 @@
           $(sb.player.sprite).css('bottom',sb.player.y_pos);
           
           //move ground
-          var pos = parseInt($("#ground").css("background-position-x"), 10) - sb.default_velocity;
-          console.log('pos', pos, sb.default_velocity);
-          $("#ground").css('background-position-x', pos);
+          var pos = parseInt($('#ground').css('background-position').split(' ')[0])
+          var newpos = pos - sb.default_velocity;
+          $('#ground').css('background-position', newpos + " 0");
+
 
           $(".topPipe").each(function(){
             var $pipe = $(this);
@@ -67,8 +68,8 @@
           //move pipes
           $(".pipe").each(function(){
             var $pipe = $(this);
-            var pos = parseInt($pipe.css("left")) - sb.default_velocity;
-            $pipe.css('left', pos);
+            var pipepos = parseInt($pipe.css("left")) - sb.default_velocity;
+            $pipe.css('left', pipepos);
 
             //remove pipe
             if(parseInt($pipe.css('left')) <= -130){
@@ -151,9 +152,9 @@
     </script>
     <style>
       #pc{
-        background: url("http://icons.iconarchive.com/icons/etherbrian/bit-eat/32/Burger-icon.png");
-        height: 32px;
-        width: 32px;
+        background: url("/meatball.png");
+        height: 40px;
+        width: 40px;
         position: absolute;
         bottom: 400px;
         left: 75px;
@@ -173,7 +174,7 @@
         height: 25px;
         position: absolute;
         bottom: 0;
-        background-position-x: 0;
+        background-position-x: 1px;
       }
       #score{
         text-align: center;
