@@ -84,9 +84,9 @@
           console.log('drawing pipe');
           var height = sb._getRandomInt(100, 500);
           var topHeight = 700;
-          var topPos = -1 * height - 275;
+          var bottomPos = height + 175;
           $('<div></div>').addClass('surface').addClass('pipe').addClass('bottomPipe').css('left', '500').css('height', height).appendTo('#world');
-          $('<div></div>').addClass('surface').addClass('pipe').addClass('topPipe').css('left', '500').css('top', topPos).css('height', topHeight).appendTo('#world');
+          $('<div></div>').addClass('surface').addClass('pipe').addClass('topPipe').css('left', '500').css('bottom', bottomPos).css('height', topHeight).appendTo('#world');
         },
           
         /*****************************************
@@ -158,6 +158,7 @@
         position: absolute;
         bottom: 400px;
         left: 75px;
+        z-index: 100;
       }
       #world{
         background: #1144cc;
@@ -201,7 +202,6 @@
         z-index: 10;
       }
       .topPipe{
-        top: 0px;
         z-index: 10;
       }
       body{
