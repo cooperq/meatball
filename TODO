@@ -1,20 +1,19 @@
 Features:
 x meatball art
-start screen
-button to restart when dead
-play death sound
-death sprite
+x fork art
+x skybox art
+x play death sound
+x start screen
+x button to restart when dead
+x ground art (spaghetti)
 fart art
-pipe art
-skybox art
-ground art
+death sprite
 soundtrack
 high score
-start burger on ground
-fork enemies?
+increasing difficulty
 
 Bugs:
 x score is doubled
 x score is hidden
-kill sound on game over
+x kill sound on game over
 x ground moves faster than pipes
