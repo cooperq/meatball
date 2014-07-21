@@ -92,7 +92,7 @@ sb = {
     $("#score").html("Game Over!<br>Score: " + sb.score);
     $("body").unbind("click");
     $("body").unbind("keypress");
-    initGame();
+    setTimeout( initGame, 500);
   },
   drawNewObstacle: function(){
     var height = sb._getRandomInt(250, 450);
@@ -129,7 +129,6 @@ sb = {
     var w2 = $div2.outerWidth(true);
     var b2 = y2 + h2;
     var r2 = x2 + w2;
-    console.log(b1, y2, y1, b2, r1, x2, x1, r2);    
     if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
     return true;
   },
