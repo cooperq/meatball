@@ -42,6 +42,12 @@ sb = {
   draw: function(){
     //update sprite position
     $(sb.player.sprite).css('bottom',sb.player.y_pos);
+    $('#fart').css('bottom',sb.player.y_pos - 55);
+
+    //fade fart sprite
+    var opacity = $("#fart").css('opacity');
+    var newOpacity = Math.max(opacity - 0.05, 0);
+    $("#fart").css('opacity', newOpacity);
     
     //move ground
     var pos = parseInt($('#ground').css('background-position').split(' ')[0])
@@ -78,6 +84,7 @@ sb = {
     });
   },
   endGame: function(){
+    $("#fart").css('opacity', 0);
     $("#splatsound")[0].load();
     $("#splatsound")[0].play();
     $("#score").html("Game Over!<br>Score: " + sb.score);
@@ -120,18 +127,19 @@ sb = {
     var w2 = $div2.outerWidth(true);
     var b2 = y2 + h2;
     var r2 = x2 + w2;
-      
+    console.log(b1, y2, y1, b2, r1, x2, x1, r2);    
     if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
     return true;
   },
   gameStart: function(){
     $('#info').text('');
     sb.player = {
-      y_pos: 400,
+      y_pos: 500,
       lift: 0,
       sprite: "#pc",
       fart: function(){
         sb.player.lift = sb.default_lift;
+        $("#fart").css('opacity', 1);
         $("#fartsound")[0].load();
         $("#fartsound")[0].play();
       }

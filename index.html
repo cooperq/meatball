@@ -26,6 +26,16 @@
         bottom: 0;
         margin: auto;
       }
+      #fart{
+        height: 50px;
+        width: 50px;
+        background: url("/res/fart.png");
+        position: absolute;
+        bottom: 350px;
+        left: 25px;
+        z-index: 100;
+        opacity: 0;
+      }
       #world{
         background: url("/res/skybox.png") repeat;
         height: 100%;
@@ -89,6 +99,7 @@
       <div id='pc' class='sprite'>
         <img src="/res/meatball2.png">
       </div>
+      <div id='fart' class='sprite'></div>
       <div id='score-container'>
         <div id='score'>
           0
