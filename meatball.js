@@ -23,7 +23,7 @@ sb = {
     //collision detection
     $(".surface").each(function(idx, surface){
       if(sb._collision($(sb.player.sprite), $(surface))){
-        console.log('worlds collide', $(sb.player.sprite), $(surface));
+        console.log('worlds collide', sb.player, $(surface));
         sb.game_over = true;
       }
     });
