@@ -26,6 +26,9 @@
         bottom: 0;
         margin: auto;
       }
+      #pc-dead{
+        display: none;
+      }
       #fart{
         height: 50px;
         width: 50px;
@@ -97,7 +100,8 @@
   <body>
     <div id='world' class='special'>
       <div id='pc' class='sprite'>
-        <img src="/res/meatball2.png">
+        <img id='pc-live' src="/res/meatball2.png">
+        <img id='pc-dead' src="/res/meatball-dead.png">
       </div>
       <div id='fart' class='sprite'></div>
       <div id='score-container'>

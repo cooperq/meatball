@@ -87,6 +87,8 @@ sb = {
     $("#fart").css('opacity', 0);
     $("#splatsound")[0].load();
     $("#splatsound")[0].play();
+    $("#pc-live").hide();
+    $("#pc-dead").show();
     $("#score").html("Game Over!<br>Score: " + sb.score);
     $("body").unbind("click");
     $("body").unbind("keypress");
@@ -144,6 +146,9 @@ sb = {
         $("#fartsound")[0].play();
       }
     }
+
+    $("#pc-dead").hide();
+    $("#pc-live").show();
 
     console.log('setting up keypress');
     //listen for interaction
