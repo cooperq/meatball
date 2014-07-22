@@ -7,6 +7,16 @@ sb = {
   frame_count: 0,
   score: 0,
   game_over: false,
+  get_high_score: function(){
+    var hs = localStorage.getItem('highScore') || 0
+    return parseInt(hs, 10);
+  },
+  set_high_score: function(new_hs){
+    var cur_hs = this.get_high_score();
+    if(new_hs > cur_hs){
+      localStorage.setItem('highScore', new_hs);
+    }
+  },
   next_frame: function(){
     if(sb.game_over){
       clearInterval(sb._intervalId);
@@ -84,12 +94,13 @@ sb = {
     });
   },
   endGame: function(){
+    sb.set_high_score(sb.score);
     $("#fart").css('opacity', 0);
     $("#splatsound")[0].load();
     $("#splatsound")[0].play();
     $("#pc-live").hide();
     $("#pc-dead").show();
-    $("#score").html("Game Over!<br>Score: " + sb.score);
+    $("#score").html("Game Over!<br>Score: " + sb.score + "<br>High Score: " + sb.get_high_score());
     $("body").unbind("click");
     $("body").unbind("keypress");
     setTimeout( initGame, 500);
