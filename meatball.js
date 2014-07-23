@@ -196,10 +196,17 @@ $(function(){
 function initGame(){
   $("#info").text("Press any key to fart!");
   $("body").keypress(function(e){
+    init(e);
+  });
+  $("body").click(function(e){
+    init(e);
+  });
+  var init = function(e){
     $("body").unbind("keypress");
+    $("body").unbind("click");
     sb.gameStart();
     e.preventDefault();
-  });
+  }
 }
 
 
