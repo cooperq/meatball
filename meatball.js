@@ -1,4 +1,12 @@
-sb = {
+//set up requestAnimationFrame
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                               window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+/*********************************************
+ * fm - Main game class, holds parameters and methods that control the game,
+ * also hold the update and draw methods for the main game loop
+ ********************************************/
+var fm = {
   fps: 50,
   default_gravity: 8,
   default_lift: 18,
@@ -18,41 +26,42 @@ sb = {
     }
   },
   next_frame: function(){
-    if(sb.game_over){
-      clearInterval(sb._intervalId);
-      sb.endGame();
+    if(fm.game_over){
+      clearInterval(fm._intervalId);
+      fm.endGame();
       return;
     }
-    sb.frame_count += 1;
-    sb.update();
-    sb.draw();
+    fm.frame_count += 1;
+    fm.update();
+    fm.draw();
+
   },
   update: function(){
-    $("#score").text(sb.score);  
+    $("#score").text(fm.score);  
 
     //collision detection
     $(".surface").each(function(idx, surface){
-      if(sb._collision($(sb.player.sprite), $(surface))){
-        console.log('worlds collide', sb.player, $(surface));
-        sb.game_over = true;
+      if(fm._collision($(fm.player.sprite), $(surface))){
+        console.log('worlds collide', fm.player, $(surface));
+        fm.game_over = true;
       }
     });
 
     //update player position
-    sb.player.y_pos = sb.player.y_pos - sb.default_gravity + sb.player.lift
+    fm.player.y_pos = fm.player.y_pos - fm.default_gravity + fm.player.lift
 
     //calculate new upward lift
-    if(sb.player.lift > 0) { sb.player.lift -= sb.default_drag }
+    if(fm.player.lift > 0) { fm.player.lift -= fm.default_drag }
 
     //draw another obstacle 
-    if(sb.frame_count % 100 === 0){
-      sb.drawNewObstacle();
+    if(fm.frame_count % 100 === 0){
+      fm.drawNewObstacle();
     }
   },
   draw: function(){
     //update sprite position
-    $(sb.player.sprite).css('bottom',sb.player.y_pos);
-    $('#fart').css('bottom',sb.player.y_pos - 55);
+    $(fm.player.sprite).css('bottom',fm.player.y_pos);
+    $('#fart').css('bottom',fm.player.y_pos - 55);
 
     //fade fart sprite
     var opacity = $("#fart").css('opacity');
@@ -61,12 +70,12 @@ sb = {
     
     //move ground
     var pos = parseInt($('#ground').css('background-position').split(' ')[0])
-    var newpos = pos - sb.default_velocity + 1;
+    var newpos = pos - fm.default_velocity + 1;
     $('#ground').css('background-position', newpos + " 0");
 
     //move skybox
     var pos = parseInt($('#world').css('background-position').split(' ')[0])
-    var newpos = pos - sb.default_velocity + 2;
+    var newpos = pos - fm.default_velocity + 2;
     $('#world').css('background-position', newpos + " 0");
 
 
@@ -75,7 +84,7 @@ sb = {
       //score pipe
       if(parseInt($pipe.css('left')) <= -55){
         if(!$pipe.data('scored')){
-          sb.score += 1;
+          fm.score += 1;
           $pipe.data('scored', 'true');
         }
       }
@@ -84,7 +93,7 @@ sb = {
     //move pipes
     $(".pipe").each(function(){
       var $pipe = $(this);
-      var pipepos = parseInt($pipe.css("left")) - sb.default_velocity;
+      var pipepos = parseInt($pipe.css("left")) - fm.default_velocity;
       $pipe.css('left', pipepos);
 
       //remove pipe
@@ -94,19 +103,19 @@ sb = {
     });
   },
   endGame: function(){
-    sb.set_high_score(sb.score);
+    fm.set_high_score(fm.score);
     $("#fart").css('opacity', 0);
     $("#splatsound")[0].load();
     $("#splatsound")[0].play();
     $("#pc-live").hide();
     $("#pc-dead").show();
-    $("#score").html("Game Over!<br>Score: " + sb.score + "<br>High Score: " + sb.get_high_score());
+    $("#score").html("Game Over!<br>Score: " + fm.score + "<br>High Score: " + fm.get_high_score());
     $("body").unbind("click");
     $("body").unbind("keypress");
     setTimeout( initGame, 500);
   },
   drawNewObstacle: function(){
-    var height = sb._getRandomInt(250, 450);
+    var height = fm._getRandomInt(250, 450);
     var bottomPos = 684 - height + 175;
     $('<div></div>').addClass('surface').addClass('pipe').addClass('bottomPipe').css('left', '500').css('bottom', -1 * height).appendTo('#world');
     $('<div></div>').addClass('surface').addClass('pipe').addClass('topPipe').css('left', '500').css('bottom', bottomPos).appendTo('#world');
@@ -145,12 +154,12 @@ sb = {
   },
   gameStart: function(){
     $('#info').text('');
-    sb.player = {
+    fm.player = {
       y_pos: 500,
       lift: 0,
       sprite: "#pc",
       fart: function(){
-        sb.player.lift = sb.default_lift;
+        fm.player.lift = fm.default_lift;
         $("#fart").css('opacity', 1);
         $("#fartsound")[0].load();
         $("#fartsound")[0].play();
@@ -163,11 +172,11 @@ sb = {
     console.log('setting up keypress');
     //listen for interaction
     $("body").click(function(e){
-      sb.player.fart();
+      fm.player.fart();
       e.preventDefault();
     });
     $("body").keypress(function(e){
-      sb.player.fart();
+      fm.player.fart();
       e.preventDefault();
     });
 
@@ -177,37 +186,44 @@ sb = {
       $pipe.remove();
     });
 
-    sb.frame_count = 0;
-    sb.score = 0;
-    sb.game_over = false;
+    fm.frame_count = 0;
+    fm.score = 0;
+    fm.game_over = false;
 
     console.log('starting game loop');
     // Start the game loop
-    sb._intervalId = setInterval(sb.next_frame, 1000 / sb.fps);
+    fm._intervalId = setInterval(fm.next_frame, 1000 / fm.fps);
 
   }
 
-} //end sb
+} //end fm
 
-$(function(){
-  initGame();
-});
-
-function initGame(){
+/************************************************
+ * initGame()
+ * listens for keypress or click and starts a new
+ * game. Calls fm.gameStart()
+ ***********************************************/
+var initGame = function(){
   $("#info").text("Press any key to fart!");
+
   $("body").keypress(function(e){
     init(e);
   });
   $("body").click(function(e){
     init(e);
   });
+
   var init = function(e){
     $("body").unbind("keypress");
     $("body").unbind("click");
-    sb.gameStart();
+    fm.gameStart();
     e.preventDefault();
   }
+
 }
 
-
+//initialize the page
+$(function(){
+  initGame();
+});
 
