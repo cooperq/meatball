@@ -1,14 +1,14 @@
 <html>
   <head>
     <!-- <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'> -->
-    <script src="/lib/jquery.min.js"></script>
+    <script src="lib/jquery.min.js"></script>
     <script src="meatball.js"></script>
     <style>
       @font-face {
         font-family: 'Press Start 2P';
         font-style: normal;
         font-weight: 400;
-        src: local('Press Start 2P'), local('PressStart2P-Regular'), url(/res/pressstart2p.woff) format('woff');
+        src: local('Press Start 2P'), local('PressStart2P-Regular'), url(res/pressstart2p.woff) format('woff');
       } 
       #pc{
         height: 50px;
@@ -32,7 +32,7 @@
       #fart{
         height: 50px;
         width: 50px;
-        background: url("/res/fart.png");
+        background: url("res/fart.png");
         position: absolute;
         bottom: 350px;
         left: 25px;
@@ -40,7 +40,7 @@
         opacity: 0;
       }
       #world{
-        background: url("/res/skybox.png") repeat;
+        background: url("res/skybox.png") repeat;
         height: 100%;
         width: 500px;
         margin-left: auto;
@@ -49,7 +49,7 @@
         position: relative;
       }
       #ground{
-        background: url("/res/ground.png") repeat;
+        background: url("res/ground.png") repeat;
         width: 100%;
         height: 25px;
         position: absolute;
@@ -78,7 +78,7 @@
       .pipe{
         width: 112px;
         height: 684px;
-        background: url("/res/fork.png");
+        background: url("res/fork.png");
         position: absolute;
         z-index: 10;
       }
@@ -100,8 +100,8 @@
   <body>
     <div id='world' class='special'>
       <div id='pc' class='sprite'>
-        <img id='pc-live' src="/res/meatball2.png">
-        <img id='pc-dead' src="/res/meatball-dead.png">
+        <img id='pc-live' src="res/meatball2.png">
+        <img id='pc-dead' src="res/meatball-dead.png">
       </div>
       <div id='fart' class='sprite'></div>
       <div id='score-container'>
@@ -116,10 +116,10 @@
       <div id='ground' class='surface'>
       </div>
     </div>
-    <audio id="fartsound" src="/res/fart2.wav" preload="auto"></audio>
-    <audio id="splatsound" src="/res/splat.wav" preload="auto"></audio>
+    <audio id="fartsound" src="res/fart2.wav" preload="auto"></audio>
+    <audio id="splatsound" src="res/splat.wav" preload="auto"></audio>
     <audio  preload="auto" autobuffer loop autoplay>
-      <source src='/res/music.wav'>
+      <source src='res/music.wav'>
     </audio> 
   </body>
 </html>
