@@ -7,8 +7,7 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
  * also hold the update and draw methods for the main game loop
  ********************************************/
 var fm = {
-  fps: 50,
-  default_gravity: 8,
+  default_gravity: 6,
   default_lift: 18,
   default_velocity: 4,
   default_drag: 1,
@@ -27,14 +26,13 @@ var fm = {
   },
   next_frame: function(){
     if(fm.game_over){
-      clearInterval(fm._intervalId);
-      fm.endGame();
+      fm.gameEnd();
       return;
     }
     fm.frame_count += 1;
     fm.update();
     fm.draw();
-
+    window.requestAnimationFrame(fm.next_frame);
   },
   update: function(){
     $("#score").text(fm.score);  
@@ -102,7 +100,7 @@ var fm = {
       }
     });
   },
-  endGame: function(){
+  gameEnd: function(){
     fm.set_high_score(fm.score);
     $("#fart").css('opacity', 0);
     $("#splatsound")[0].load();
@@ -192,7 +190,7 @@ var fm = {
 
     console.log('starting game loop');
     // Start the game loop
-    fm._intervalId = setInterval(fm.next_frame, 1000 / fm.fps);
+    requestAnimationFrame(fm.next_frame);
 
   }
 
