@@ -10,7 +10,7 @@ x fart art
 x death sprite
 x soundtrack
 x high score
-switch to request animation frame
+x switch to request animation frame
 mobile work
 increasing difficulty
 3 lives
@@ -21,4 +21,4 @@ x score is doubled
 x score is hidden
 x kill sound on game over
 x ground moves faster than pipes
-collision bug on ground
+x collision bug on ground

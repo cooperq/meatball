@@ -7,43 +7,64 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
  * also hold the update and draw methods for the main game loop
  ********************************************/
 var fm = {
-  default_gravity: 6,
-  default_lift: 18,
-  default_velocity: 4,
-  default_drag: 1,
-  frame_count: 0,
-  score: 0,
-  game_over: false,
-  get_high_score: function(){
+  default_gravity: 6, //the amount by which the player will be dragged down each frame
+  default_lift: 18, //when the fart button is pressed the player will move up by this many pixels
+  default_velocity: 4, //the base rate at which the world moves
+  default_drag: 1, //the amount by which the lift will be dragged down each frame
+  fork_low: 250, //the lowest a fork will go
+  fork_high: 450, //the highest a fork will go
+  fork_height: 684, //default fork image height
+  fork_gap: 175, //gap between top and bottom fork
+  score: 0, //the score, which starts at 0. Duh.
+  game_over: false, //boolean stating wether the game has ended or not
+  default_obstacle_spacing: 1500, //number of milliseconds in between each obstacle.
+  obstacle_interval: null, //a placeholder for the setInterval object for drawing obstacles
+
+  /**********************************
+   * getHighScore()
+   * Gets the high score from local 
+   * storage or return 0 if it doesn't exist
+   ***********************************/
+  getHighScore: function(){
     var hs = localStorage.getItem('highScore') || 0
     return parseInt(hs, 10);
   },
-  set_high_score: function(new_hs){
-    var cur_hs = this.get_high_score();
+
+  /**********************************
+   * setHighScore()
+   * setter for high score
+   ********************************/
+  setHighScore: function(new_hs){
+    var cur_hs = this.getHighScore();
     if(new_hs > cur_hs){
       localStorage.setItem('highScore', new_hs);
     }
   },
-  next_frame: function(){
+
+  /********************************
+   * nextFrame()
+   * if the game is over then call game end
+   * otherwise call update() and draw() 
+   * and then request the next frame
+   ********************************/
+  nextFrame: function(){
     if(fm.game_over){
       fm.gameEnd();
       return;
     }
-    fm.frame_count += 1;
     fm.update();
     fm.draw();
-    window.requestAnimationFrame(fm.next_frame);
+    fm.checkCollisions();
+    window.requestAnimationFrame(fm.nextFrame);
   },
+
+  /***********************************
+   * update()
+   * Update all the objects positions, 
+   * and anything else
+   ***********************************/
   update: function(){
     $("#score").text(fm.score);  
-
-    //collision detection
-    $(".surface").each(function(idx, surface){
-      if(fm._collision($(fm.player.sprite), $(surface))){
-        console.log('worlds collide', fm.player, $(surface));
-        fm.game_over = true;
-      }
-    });
 
     //update player position
     fm.player.y_pos = fm.player.y_pos - fm.default_gravity + fm.player.lift
@@ -51,11 +72,12 @@ var fm = {
     //calculate new upward lift
     if(fm.player.lift > 0) { fm.player.lift -= fm.default_drag }
 
-    //draw another obstacle 
-    if(fm.frame_count % 100 === 0){
-      fm.drawNewObstacle();
-    }
   },
+
+  /************************************
+   * draw sprite and obstacles in their new position
+   * move ground and skybox and forks
+   *********************************/
   draw: function(){
     //update sprite position
     $(fm.player.sprite).css('bottom',fm.player.y_pos);
@@ -94,28 +116,37 @@ var fm = {
       var pipepos = parseInt($pipe.css("left")) - fm.default_velocity;
       $pipe.css('left', pipepos);
 
-      //remove pipe
+      //remove pipe if it is off screen
       if(parseInt($pipe.css('left')) <= -130){
         $pipe.remove();
       }
     });
   },
-  gameEnd: function(){
-    fm.set_high_score(fm.score);
-    $("#fart").css('opacity', 0);
-    $("#splatsound")[0].load();
-    $("#splatsound")[0].play();
-    $("#pc-live").hide();
-    $("#pc-dead").show();
-    $("#score").html("Game Over!<br>Score: " + fm.score + "<br>High Score: " + fm.get_high_score());
-    $("body").unbind("click");
-    $("body").unbind("keypress");
-    setTimeout( initGame, 500);
+
+  /*********************************
+   * check for collision between player and obstacles
+   ********************************/
+  checkCollisions: function(){
+    //collision detection
+    $(".surface").each(function(idx, surface){
+      if(fm._collision($(fm.player.sprite), $(surface))){
+        console.log('worlds collide', fm.player, $(surface));
+        fm.game_over = true;
+      }
+    });
+
   },
+
+  /*****************************************
+   * draw a new obstacle
+   ****************************************/
   drawNewObstacle: function(){
-    var height = fm._getRandomInt(250, 450);
-    var bottomPos = 684 - height + 175;
+    var height = fm._getRandomInt(fm.fork_low, fm.fork_high);
+    var bottomPos = fm.fork_height - height + fm.fork_gap;
+
+    //draw bottom fork
     $('<div></div>').addClass('surface').addClass('pipe').addClass('bottomPipe').css('left', '500').css('bottom', -1 * height).appendTo('#world');
+    //draw top fork
     $('<div></div>').addClass('surface').addClass('pipe').addClass('topPipe').css('left', '500').css('bottom', bottomPos).appendTo('#world');
   },
     
@@ -128,12 +159,16 @@ var fm = {
   _getRandomInt: function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }, 
-
+  
+  //check if a val is between lower and upper and return the outer bound if
+  //val is outside
   _bounds_check: function(val, lower, upper){
     if(val >= upper) return upper;
     if(val <= lower) return lower;
     return val;
   },
+
+  //detect if two boxes collide
   _collision: function($div1, $div2) {
     var x1 = $div1.offset().left;
     var y1 = $div1.offset().top;
@@ -150,8 +185,15 @@ var fm = {
     if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
     return true;
   },
+
+  /**********************************
+   * Start the game loop
+   ********************************/
   gameStart: function(){
+    //clear gameover info
     $('#info').text('');
+
+    //initalize new player object
     fm.player = {
       y_pos: 500,
       lift: 0,
@@ -164,10 +206,10 @@ var fm = {
       }
     }
 
+    //show pc alive sprite
     $("#pc-dead").hide();
     $("#pc-live").show();
 
-    console.log('setting up keypress');
     //listen for interaction
     $("body").click(function(e){
       fm.player.fart();
@@ -178,21 +220,60 @@ var fm = {
       e.preventDefault();
     });
 
-    console.log('removing pipes');
+    // remove old pipes
     $(".pipe").each(function(){
       var $pipe = $(this);
       $pipe.remove();
     });
 
-    fm.frame_count = 0;
+    //reset the score
     fm.score = 0;
+
+    //the game is not over
     fm.game_over = false;
 
-    console.log('starting game loop');
-    // Start the game loop
-    requestAnimationFrame(fm.next_frame);
+    //start obstacle drawing loop
+    fm.obstacle_interval = setInterval(function(){
+      fm.drawNewObstacle();
+    }, fm.default_obstacle_spacing);
 
-  }
+    // Start the game loop
+    requestAnimationFrame(fm.nextFrame);
+
+  },
+  /**********************************
+   * end the game loop, 
+   *********************************/
+  gameEnd: function(){
+    // update the high score
+    fm.setHighScore(fm.score);
+
+    //stop drawing new obstacles
+    clearInterval(fm.obstacle_interval);
+
+    // hide farts
+    $("#fart").css('opacity', 0);
+
+    //play splat
+    $("#splatsound")[0].load();
+    $("#splatsound")[0].play();
+
+    //show dead pc sprite
+    $("#pc-live").hide();
+    $("#pc-dead").show();
+
+    //gmae over message
+    $("#score").html("Game Over!<br>Score: " + fm.score + "<br>High Score: " + fm.getHighScore());
+    
+    //don't listen for interaction
+    $("body").unbind("click");
+    $("body").unbind("keypress");
+
+    //game restart listener
+    setTimeout( initGame, 500);
+  },
+
+
 
 } //end fm
 
